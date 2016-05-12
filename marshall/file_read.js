@@ -2,26 +2,70 @@ const fs = require('fs');
 const EventEmitter = require('events').EventEmitter;
 const ee = new EventEmitter();
 
+ee.on('file-read', (data) => {
+  console.log('READ: ', data.toString());
+})
+
+
+// Could this function be an example of nested callbacks?
+
+function makeReadFile(txt){
+  return function(){
+    fs.readFile(txt, (err, data) => {
+      console.log(data);
+      ee.emit('file-read', data);
+    });
+  };
+};
+
+var one = makeReadFile('./one.txt');
+var two = makeReadFile('./two.txt');
+var three = makeReadFile('./three.txt');
+
+one();
+two();
+three();
+
+///----------------- OR OR OR (is this worse?)
+
+ee.on('one', () => {
+  process.nextTick(() => {
+    fs.readFile('./one.txt', (err, data) => {
+      console.log(data);
+      ee.emit('file-read', data);
+    });
+  });
+});
+
+ee.on('two', () => {
+  process.nextTick(() => {
+    fs.readFile('./two.txt', (err, data) => {
+      console.log(data);
+      ee.emit('file-read', data);
+    });
+  });
+});
+
+ee.on('three', () => {
+  process.nextTick(() => {
+    fs.readFile('./three.txt', (err, data) => {
+      console.log(data);
+      ee.emit('file-read', data);
+    });
+  });
+});
+
+ee.emit('one');
+ee.emit('two');
+ee.emit('three');
+
 // ee.on('file-read', (data) => {
 //   console.log('READ: ', data.toString());
 // })
-//
-// function makeReadFile(txt){
-//   return function(){
-//     fs.readFile(txt, (err, data) => {
-//       console.log(data);
-//       ee.emit('file-read', data);
-//     });
-//   };
-// };
-//
-// var one = makeReadFile('./one.txt');
-// var two = makeReadFile('./two.txt');
-// var three = makeReadFile('./three.txt');
-//
-// one();
-// two();
-// three();
+
+///----------------------
+
+
 //
 // ///
 //
@@ -65,32 +109,3 @@ const ee = new EventEmitter();
 //
 //   }
 // )
-
-
-///---------------------------
-
-ee.on('event', () => {
-  process.nextTick(() => {
-    fs.readFile('./one.txt', (err, data) => {
-      console.log(data);
-      ee.emit('file-read', data);
-    });
-  });
-});
-
-ee.emit('event');
-
-ee.on('file-read', (data) => {
-  console.log('READ: ', data.toString());
-})
-
-//
-// function makeReadFile(txt){
-//   return function(){
-//     fs.readFile(txt, (err, data) => {
-//       console.log(data);
-//       ee.emit('file-read', data);
-//     });
-//   };
-// };
-//

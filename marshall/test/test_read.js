@@ -6,6 +6,7 @@ const three = require(__dirname + './three.txt')
 
 describe('first async test', () => {
   it('should read async code', (done) => {
-    if (err)
+    expect('???')to.eql('???')
+    done();
   });
 });
