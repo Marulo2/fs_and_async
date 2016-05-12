@@ -1,5 +1,5 @@
 
-//this can be ignored - this was a mad experiment
+//this can be ignored - this was a mad experiment!
 
 var readText = require('./file_read')
 var allText = new readText();
